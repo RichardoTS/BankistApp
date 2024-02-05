@@ -58,7 +58,7 @@ const account3 = {
     "2020-07-11T23:36:17.929Z",
     "2020-07-12T10:51:36.790Z",
   ],
-  currency: "USD",
+  currency: "CLP",
   locale: "es-CL",
 };
 
@@ -77,7 +77,7 @@ const account4 = {
     // "2020-06-25T18:49:59.371Z",
     // "2020-07-26T12:01:20.894Z",
   ],
-  currency: "USD",
+  currency: "EUR",
   locale: "de-DE",
 };
 
@@ -114,7 +114,7 @@ const formatMovementDate = function (date, locale) {
     Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
 
   const daysPassed = calcDaysPassed(new Date(), date);
-  console.log(daysPassed);
+  // console.log(daysPassed);
 
   if (daysPassed === 0) return "Today";
   if (daysPassed === 1) return "Yesterday";
@@ -126,6 +126,14 @@ const formatMovementDate = function (date, locale) {
   // return `${day}/${month}/${year}`;
 
   return new Intl.DateTimeFormat(locale).format(date);
+};
+
+// Function for formatting currencies
+const formatCur = function (value, locale, currency) {
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency: currency,
+  }).format(value);
 };
 
 const displayMovements = function (acc, sort = false) {
@@ -141,6 +149,8 @@ const displayMovements = function (acc, sort = false) {
     const date = new Date(acc.movementsDates[i]);
     const displayDate = formatMovementDate(date, acc.locale);
 
+    const formattedMov = formatCur(mov, acc.locale, acc.currency);
+
     const html = `
     
         <div class="movements__row">
@@ -149,7 +159,7 @@ const displayMovements = function (acc, sort = false) {
     } ${type}</div>
     <div class="movements__date">${displayDate}</div>
 
-          <div class="movements__value">${mov.toFixed(2)}€</div>
+          <div class="movements__value">${formattedMov}</div>
         </div>
         `;
 
@@ -160,19 +170,21 @@ const displayMovements = function (acc, sort = false) {
 const calcDisplayBalance = function (acc) {
   acc.balance = acc.movements.reduce((acc, mov) => acc + mov, 0);
 
-  labelBalance.textContent = `${acc.balance.toFixed(2)}€`;
+  labelBalance.textContent = formatCur(acc.balance, acc.locale, acc.currency);
 };
 
 const calcDisplaySummary = function (acc) {
   const incomes = acc.movements
     .filter(mov => mov > 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumIn.textContent = `${incomes.toFixed(2)}€`;
+  labelSumIn.textContent = formatCur(incomes, acc.locale, acc.currency);
+  // `${incomes.toFixed(2)}€`;
 
   const out = acc.movements
     .filter(mov => mov < 0)
     .reduce((acc, mov) => acc + mov, 0);
-  labelSumOut.textContent = `${Math.abs(out).toFixed(2)}€`;
+  labelSumOut.textContent = formatCur(Math.abs(out), acc.locale, acc.currency);
+  // `${Math.abs(out).toFixed(2)}€`;
 
   const interest = acc.movements
     .filter(mov => mov > 0)
@@ -182,7 +194,8 @@ const calcDisplaySummary = function (acc) {
       return int >= 1;
     })
     .reduce((acc, int) => acc + int, 0);
-  labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+  labelSumInterest.textContent = formatCur(interest, acc.locale, acc.currency);
+  // `${interest.toFixed(2)}€`;
 };
 
 const createUsernames = function (accs) {
@@ -1124,7 +1137,6 @@ const calcDaysPassed = (date1, date2) =>
 
 const days1 = calcDaysPassed(new Date(2037, 3, 14), new Date(2037, 3, 25));
 console.log(days1);
-*/
 
 const num = 310785.23;
 
@@ -1132,6 +1144,7 @@ const options = {
   style: "currency",
   unit: "mile-per-hour",
   currency: "EUR",
+  // useGrouping: false,
 };
 
 console.log(
@@ -1144,3 +1157,13 @@ console.log(
   navigator.language,
   new Intl.NumberFormat(navigator.language, options).format(num)
 );
+*/
+
+// Timers
+const ingredients = ["olives", "spinach"];
+setTimeout(
+  (ing1, ing2) => console.log(`Here is your pizza with ${ing1} and ${ing2} 🍕`),
+  3000,
+  ...ingredients
+);
+console.log("Waiting...");
